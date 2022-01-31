@@ -1,6 +1,6 @@
 import math
 import itertools
-from numpy import arange, ndarray, newaxis, set_printoptions, isnan
+from numpy import arange, ndarray, newaxis, set_printoptions
 from pandas import DataFrame, concat, unique
 import matplotlib.pyplot as plt
 from matplotlib.dates import _reset_epoch_test_example, set_epoch, AutoDateLocator, AutoDateFormatter
