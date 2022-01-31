@@ -1,4 +1,10 @@
-/data/air_quality_tabular.csv
-/data/air_quality_timeseries.csv
-/data/NYC_collisions_tabular.csv
-/data/NYC_collisions_timeseries.csv
+/data_original/air_quality_tabular.csv
+/data_original/air_quality_timeseries.csv
+/data_original/NYC_collisions_tabular.csv
+/data_original/NYC_collisions_timeseries.csv
+/data_to_use/air_quality_tabular_without_na.csv
+/data_to_use/nyc_car_crash_without_na.csv
+/data_to_use/
+/data_original/
+/images/
+/images/
