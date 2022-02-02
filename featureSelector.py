@@ -12,7 +12,7 @@ class FeatureSelector():
         self.data_set = data_set
 
         self.threshold = 0.9
-        self.variance_threshold = 1
+        self.variance_threshold = 0.1
 
         if not os.path.exists(f'images_nyc/featureEngineering'):
             os.makedirs(f'images_nyc/featureEngineering')
@@ -36,7 +36,8 @@ class FeatureSelector():
             else:
                 vars_2drop[el] = el_corr.index
 
-            print(f'redundant variables dropped {vars_2drop}')
+            if len(vars_2drop) > 1:
+                print(f'redundant variables dropped {vars_2drop}')
         return vars_2drop, corr_mtx
 
     def show_correlation_matrix(self, show_figure=False):
@@ -102,7 +103,6 @@ if __name__ == '__main__':
     var2_drop, _ = featureSelector.select_redundant()
     data_before_feature_selection = featureSelector.data
     data_after_feature_selection = featureSelector.drop_redundant_and_low_variance_variables()
-
 
 
 

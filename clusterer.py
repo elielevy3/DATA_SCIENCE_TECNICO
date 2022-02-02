@@ -21,7 +21,7 @@ class Clusterer():
         data = Data()
         self.data_set = data_set
         self.data = data.get_air_quality_data() if data_set == 'air_quality' else data.get_nyc_data()
-        self.data = self.data.sample(n=2000)
+        self.data = self.data.sample(n=5000)
         self.data_original = self.data
 
         if not os.path.exists(f'images_nyc/lab8'):
@@ -64,7 +64,8 @@ class Clusterer():
             estimator.fit(self.data)
             mse.append(estimator.inertia_)
             sc.append(silhouette_score(self.data, estimator.labels_))
-            plot_clusters(self.data, v2, v1, estimator.labels_.astype(float), estimator.cluster_centers_, k, f'KMeans k={k}',
+            plot_clusters(self.data, v2, v1, estimator.labels_.astype(float), estimator.cluster_centers_, k,
+                          f'KMeans k={k}',
                           ax=axs[i, j])
             i, j = (i + 1, 0) if (n + 1) % cols == 0 else (i, j + 1)
 
@@ -201,7 +202,6 @@ class Clusterer():
         print(f' Clustering with different metrics for ds based clustering and save mse '
               f'and sc of {self.data_set} finished')
 
-
     def cluster_with_em(self, show_chart=False, N_CLUSTERS=None, v1=0, v2=1):
         if N_CLUSTERS is None:
             N_CLUSTERS = [2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
@@ -328,7 +328,8 @@ class Clusterer():
 
         return values_mse, values_sc
 
-    def cluster_hierarchical_with_different_metrics_mse_sc(self, show_chart=False, METRICS=None, LINKS=None, v1=0, v2=1):
+    def cluster_hierarchical_with_different_metrics_mse_sc(self, show_chart=False, METRICS=None, LINKS=None, v1=0,
+                                                           v2=1):
         if LINKS is None:
             LINKS = ['complete', 'average']
         if METRICS is None:
@@ -349,7 +350,6 @@ class Clusterer():
 
         print(f' Clustering hierarchical with different metrics and save mse and sc of {self.data_set} finished')
 
-
     def run_all_cluster_methods(self, v1=0, v2=1):
         self.cluster_with_kmeans_mse_sc(v1=v1, v2=v2)
         self.cluster_with_em_mse_sc(v1=v1, v2=v2)
@@ -358,21 +358,32 @@ class Clusterer():
 
 
 if __name__ == "__main__":
-
     # airQualityClusterer without PCA and with PCA
-    aqClusterWithoutPca = Clusterer(data_set='air_quality')
-    aqClusterWithoutPca.apply_feature_selection()
+    # without PCA
+    # aqClusterWithoutPca = Clusterer(data_set='air_quality')
+    # aqClusterWithoutPca.apply_feature_selection()
+    # v1, v2 = aqClusterWithoutPca.data.columns.get_loc("NO2_Mean"), \
+    #          aqClusterWithoutPca.data.columns.get_loc("O3_Mean")
+    #
+    # aqClusterWithoutPca.run_all_cluster_methods(v1=v1, v2=v2)
+    #
+    # # with PCA
+    # aqClusterWithPca = Clusterer(data_set='air_quality')
+    # aqClusterWithPca.apply_feature_selection()
+    # aqClusterWithPca.apply_pca(n_components=4)
+    # aqClusterWithPca.run_all_cluster_methods()
 
-    v1, v2 = aqClusterWithoutPca.data.columns.get_loc("NO2_Mean"), \
-             aqClusterWithoutPca.data.columns.get_loc("O3_Mean")
+    # nycClusterer without PCA and with PCA
+    # without PCA
+    nycClustererWithoutPca = Clusterer(data_set='nyc')
+    nycClustererWithoutPca.apply_feature_selection()
+    nycClustererWithoutPca.normalize_data()
+    v1, v2 = nycClustererWithoutPca.data.columns.get_loc("PERSON_AGE"), \
+             nycClustererWithoutPca.data.columns.get_loc("EMOTIONAL_STATUS")
+    nycClustererWithoutPca.run_all_cluster_methods(v1=v1, v2=v2)
 
-    aqClusterWithoutPca.run_all_cluster_methods_without_pca(v1=v1, v2=v2)
-
-
-    aqClusterWithPca = Clusterer(data_set='air_quality')
-    aqClusterWithPca.apply_feature_selection()
-    aqClusterWithPca.apply_pca(n_components=4)
-    aqClusterWithPca.run_all_cluster_methods()
-
-
-
+    # with PCA
+    nycClustererWithPca = Clusterer(data_set='nyc')
+    nycClustererWithPca.apply_feature_selection()
+    nycClustererWithPca.apply_pca(n_components=3)
+    nycClustererWithPca.run_all_cluster_methods()

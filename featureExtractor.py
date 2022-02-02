@@ -5,6 +5,7 @@ from featureSelector import FeatureSelector
 from numpy.linalg import eig
 from matplotlib.pyplot import gca, title
 import pandas as pd
+from sklearn import preprocessing
 import os
 
 
@@ -37,9 +38,8 @@ class FeatureExtractor():
 
     def show(self, show_figure=False):
         variables = self.data.columns.values
-        eixo_x = 0
-        eixo_y = 4
-        eixo_z = 7
+        eixo_y = 0
+        eixo_z = 1
 
         figure()
         xlabel(variables[eixo_y])
@@ -89,8 +89,9 @@ class FeatureExtractor():
         variables, eixo_y, eixo_z  = self.show(False)
 
         mean = (self.data.mean(axis=0)).tolist()
-        centered_data = self.data - mean
+        # centered_data = self.data - mean
 
+        centered_data = preprocessing.normalize(self.data, norm='l2')
 
         pca = PCA(n_components=n_components)
         pca.fit(centered_data)
@@ -126,7 +127,6 @@ if __name__ == "__main__":
     featureExtractor.show_variance_ratio(show_figure=True)
     # featureExtractor.get_rid_of_redundant_features()
     # transformed_data = featureExtractor.apply_pca()
-    print(featureExtractor.data.var())
 
     # featureExtractor.show_variance_ratio(show_figure=True)
 
