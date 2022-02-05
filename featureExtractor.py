@@ -1,4 +1,4 @@
-from matplotlib.pyplot import figure, xlabel, ylabel, scatter, show, subplots
+from matplotlib.pyplot import figure, xlabel, ylabel, scatter, show, subplots, savefig
 from data import Data
 from sklearn.decomposition import PCA
 from featureSelector import FeatureSelector
@@ -33,8 +33,6 @@ class FeatureExtractor():
 
     def get_rid_of_redundant_features(self):
         data = self.featureSelector.drop_redundant_and_low_variance_variables()
-
-        print(data)
 
     def show(self, show_figure=False):
         variables = self.data.columns.values
@@ -80,6 +78,8 @@ class FeatureExtractor():
         for i, v in enumerate(pca.explained_variance_ratio_):
             ax.text(i, v + 0.05, f'{v * 100:.1f}', ha='center', fontweight='bold')
 
+        savefig(f'{self.output_path}/explained_variance_ratio.png')
+
         if show_figure:
             show()
 
@@ -89,16 +89,16 @@ class FeatureExtractor():
         variables, eixo_y, eixo_z  = self.show(False)
 
         mean = (self.data.mean(axis=0)).tolist()
-        # centered_data = self.data - mean
+        centered_data = self.data - mean
 
-        centered_data = preprocessing.normalize(self.data, norm='l2')
+        # centered_data = preprocessing.normalize(self.data, norm='l2')
 
         pca = PCA(n_components=n_components)
         pca.fit(centered_data)
 
         # rec = pd.DataFrame(pca.components_, columns=self.scaled.columns, index=['PC-1', 'PC-2'])
 
-        transf = pca.transform(self.data)
+        transf = pca.transform(centered_data)
         cols = []
 
         for i in range(1, n_components + 1):
@@ -115,6 +115,9 @@ class FeatureExtractor():
         axs[0, 1].set_ylabel('PC2')
         axs[0, 1].scatter(transf[:, 0], transf[:, 1])
 
+        savefig(f'{self.output_path}/show_pcas.png')
+
+
         if show_figure:
             show()
 
@@ -122,13 +125,11 @@ class FeatureExtractor():
 
 if __name__ == "__main__":
     featureExtractor = FeatureExtractor('nyc')
-
+    # featureExtractor.show_variance_ratio(show_figure=True)
+    # featureExtractor.get_rid_of_redundant_features()
+    transformed_data = featureExtractor.apply_pca()
 
     featureExtractor.show_variance_ratio(show_figure=True)
-    # featureExtractor.get_rid_of_redundant_features()
-    # transformed_data = featureExtractor.apply_pca()
-
-    # featureExtractor.show_variance_ratio(show_figure=True)
 
     # featureExtractor = FeatureExtractor('air_quality')
     # featureExtractor.show_variance_ratio(show_figure=True)

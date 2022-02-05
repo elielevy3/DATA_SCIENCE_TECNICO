@@ -3,6 +3,7 @@ from seaborn import heatmap
 from ds_charts import bar_chart
 import os
 from data import Data
+import pandas as pd
 
 
 class FeatureSelector():
@@ -23,6 +24,8 @@ class FeatureSelector():
 
     def select_redundant(self):
         corr_mtx = self.data.corr()
+
+        print(corr_mtx)
         if corr_mtx.empty:
             return {}
 
@@ -36,12 +39,12 @@ class FeatureSelector():
             else:
                 vars_2drop[el] = el_corr.index
 
-            if len(vars_2drop) > 1:
-                print(f'redundant variables dropped {vars_2drop}')
+            # if len(vars_2drop) > 1:
+            #     print(f'redundant variables dropped {vars_2drop}')
         return vars_2drop, corr_mtx
 
     def show_correlation_matrix(self, show_figure=False):
-        vars_2drop, corr_mtx = self.select_redundant(self.data.corr(), self.threshold)
+        vars_2drop, corr_mtx = self.select_redundant()
         if corr_mtx.empty:
             raise ValueError('Matrix is empty.')
 
@@ -49,7 +52,7 @@ class FeatureSelector():
         heatmap(corr_mtx, xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=False, cmap='Blues')
         title('Filtered Correlation Analysis')
 
-        savefig(f'images/filtered_correlation_analysis_{self.threshold}.png')
+        savefig(f'{self.output_path}/filtered_correlation_analysis_{self.threshold}.png')
         if show_figure:
             show()
 
@@ -61,7 +64,7 @@ class FeatureSelector():
                 for r in vars_2drop[key]:
                     if r != key and r not in sel_2drop:
                         sel_2drop.append(r)
-        if len(sel_2drop) > 1:
+        if len(sel_2drop) >= 1:
             print('Variables to drop', sel_2drop)
         df = self.data.copy()
         for var in sel_2drop:
@@ -80,12 +83,13 @@ class FeatureSelector():
                 lst_variables.append(el)
                 lst_variances.append(value)
 
-        if len(lst_variables) > 1:
+
+        if len(lst_variables) >= 1:
             print('Variables to drop variance', lst_variables)
 
         figure(figsize=[10, 4])
 
-        if len(lst_variables) > 1:
+        if len(lst_variables) >= 1:
             bar_chart(lst_variables, lst_variances, title='Variance analysis', xlabel='variables', ylabel='variance')
             savefig(f'{self.output_path}/filtered_variance_analysis.png')
 
@@ -97,12 +101,16 @@ if __name__ == '__main__':
     # air quality
     data = Data()
 
-    featureSelector = FeatureSelector(data_set='air_quality', data=data)
+    #print(data.nyc_data.corr())
 
+    featureSelector = FeatureSelector(data_set='nyc', data=data.nyc_data)
 
-    var2_drop, _ = featureSelector.select_redundant()
-    data_before_feature_selection = featureSelector.data
-    data_after_feature_selection = featureSelector.drop_redundant_and_low_variance_variables()
+    #
+    # featureSelector.show_correlation_matrix()
+    #
+    # var2_drop, _ = featureSelector.select_redundant()
+    # data_before_feature_selection = featureSelector.data
+    # data_after_feature_selection = featureSelector.drop_redundant_and_low_variance_variables()
 
 
 

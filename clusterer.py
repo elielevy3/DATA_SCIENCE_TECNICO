@@ -44,10 +44,15 @@ class Clusterer():
         featureSelector = FeatureSelector(self.data_set, self.data)
         self.data = featureSelector.drop_redundant_and_low_variance_variables()
 
-    def normalize_data(self):
-        columns = list(self.data.columns)
-        self.data = preprocessing.normalize(self.data, norm='l2')
-        self.data = pd.DataFrame(self.data, columns=columns)
+    def center_data(self):
+        # columns = list(self.data.columns)
+        # pd.DataFrame(self.data, columns=columns)
+        # self.data = preprocessing.normalize(self.data, norm='l2')
+
+        mean = (self.data.mean(axis=0)).tolist()
+        centered_data = self.data - mean
+
+        self.data = centered_data
 
     def cluster_with_kmeans(self, show_chart=False, N_CLUSTERS=None, v1=0, v2=1):
         if N_CLUSTERS is None:
@@ -362,22 +367,24 @@ if __name__ == "__main__":
     # without PCA
     # aqClusterWithoutPca = Clusterer(data_set='air_quality')
     # aqClusterWithoutPca.apply_feature_selection()
+    #
     # v1, v2 = aqClusterWithoutPca.data.columns.get_loc("NO2_Mean"), \
     #          aqClusterWithoutPca.data.columns.get_loc("O3_Mean")
-    #
+    # #
     # aqClusterWithoutPca.run_all_cluster_methods(v1=v1, v2=v2)
     #
     # # with PCA
     # aqClusterWithPca = Clusterer(data_set='air_quality')
     # aqClusterWithPca.apply_feature_selection()
-    # aqClusterWithPca.apply_pca(n_components=4)
+    # aqClusterWithPca.apply_pca(n_components=6)
     # aqClusterWithPca.run_all_cluster_methods()
 
     # nycClusterer without PCA and with PCA
     # without PCA
     nycClustererWithoutPca = Clusterer(data_set='nyc')
     nycClustererWithoutPca.apply_feature_selection()
-    nycClustererWithoutPca.normalize_data()
+
+    # nycClustererWithoutPca.center_data()
     v1, v2 = nycClustererWithoutPca.data.columns.get_loc("PERSON_AGE"), \
              nycClustererWithoutPca.data.columns.get_loc("EMOTIONAL_STATUS")
     nycClustererWithoutPca.run_all_cluster_methods(v1=v1, v2=v2)
@@ -385,5 +392,5 @@ if __name__ == "__main__":
     # with PCA
     nycClustererWithPca = Clusterer(data_set='nyc')
     nycClustererWithPca.apply_feature_selection()
-    nycClustererWithPca.apply_pca(n_components=3)
+    nycClustererWithPca.apply_pca(n_components=3) # data is normalized inside PCA
     nycClustererWithPca.run_all_cluster_methods()
